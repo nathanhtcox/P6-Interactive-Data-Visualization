@@ -61,7 +61,7 @@
             var margin = 75,
                 width = 1400 - margin,
                 height = 600 - margin,
-                jitter = 20;
+                jitter = 30;
 
             var x = d3.scale.linear()
                 .range([margin, width])
@@ -126,10 +126,8 @@
                 .attr("class", "bubble")
                 .selectAll("circle")
                 .data(loan_data)
-                .enter();
-                
-                
-            bubbles.append("circle") 
+                .enter()
+                .append("circle") 
                 .attr('cx', function(d) { return x(d['creditScore']) + Math.random()*jitter - jitter/2; })
                 .attr('cy', function(d) { return y(d['interestRate']); })
                 .attr('fill', 'orange');
