@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style>
+        circle {
+            <!-- fill: orange; --!>
+            <!-- stroke: black; --!>
+            stroke-width: 0.7;
+            opacity: 0.2;
+            r: 2;
+        }
+
+        h2 {
+            text-align: center;
+            color: black;
+        }
+      
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+        
+        div.emp_buttons {
+        margin-top: 100px;
+        left: 50px;
+      }
+
+      div.emp_buttons div {
+        background-color: rgb(251, 201, 127);
+        padding: 3px;
+        margin: 7px;
+      }
+      
+      nav {
+        float: left;
+        max-width: 160px;
+        margin: 0;
+        padding: 1em;
+      }
+
+      article {
+        margin-left: 170px;
+        border-left: 1px solid gray;
+        padding: 1em;
+        overflow: hidden;
+      }
+      
+    </style>
+    <script type="text/javascript">  
+        function draw(loan_data) {
+            "use strict";
+            var margin = 75,
+                width = 1400 - margin,
+                height = 600 - margin,
+                jitter = 20;
+
+            var x = d3.scale.linear()
+                .range([margin, width])
+                .domain([400,900])
+
+            var y = d3.scale.linear()
+                .range([height, margin])
+                .domain([0,0.4])
+                
+            var xAxis = d3.svg.axis().scale(x);
+            
+            var yAxis = d3.svg.axis().scale(y).orient("left");
+            
+            var loansByEmployment = d3.nest()
+                .key(function(d) {return d.empStatus})
+                .entries(loan_data);
+            
+            loansByEmployment.splice(7,1);
+                            
+            d3.select("body")
+              .append("h2")
+              .text("Prosper Loan Data Visualization");
+
+            var nav = d3.select("body")
+                .append("nav")
+                
+            var buttons = nav.append('div')
+                    .attr('class', 'emp_buttons')
+                    .selectAll('div')
+                    .data(loansByEmployment)
+                    .enter()
+                    .append('div')
+                    .text(function(d) {return d.key})
+            
+            buttons.on("click", function(d) {
+                d3.select(".emp_buttons")
+                      .selectAll("div")
+                      .transition()
+                      .duration(500)
+                      .style("color", "black")
+                      .style("background", "rgb(251, 201, 127)");
+
+                    d3.select(this)
+                      .transition()
+                      .duration(500)
+                      .style("background", "blue")
+                      .style("color", "white");
+                
+                update(d);
+            });
+            
+            
+            
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("width", width + margin)
+                .attr("height", height + margin)
+                .append("g")
+                .attr('class', "chart");
+       
+            var bubbles = svg.append('g')
+                .attr("class", "bubble")
+                .selectAll("circle")
+                .data(loan_data)
+                .enter();
+                
+                
+            bubbles.append("circle") 
+                .attr('cx', function(d) { return x(d['creditScore']) + Math.random()*jitter - jitter/2; })
+                .attr('cy', function(d) { return y(d['interestRate']); })
+                .attr('fill', 'orange');
+                
+            //bubbles.append("svg:text")
+            //    .text(function (d) { return d['creditScore']})
+            //    .attr('x', function(d) { return x(d['creditScore'])})
+            //    .attr('y', function(d) { return y(d['interestRate']) });
+            
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + (height) + ")")
+                .call(xAxis);
+                
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(" + margin + ",0)")
+                .call(yAxis);
+            
+            svg.append("text")
+                .attr("class", "x label")
+                .attr("text-anchor", "start")
+                .attr("x", width/2)
+                .attr("y", height + 40)
+                .text("Credit Score");
+                
+            svg.append("text")
+                .attr("class", "y label")
+                .attr("text-anchor", "end")
+                .attr("y", 6)
+                .attr("x", -((height-margin)/2))
+                .attr("dy", ".75em")
+                .attr("transform", "rotate(-90)")
+                .text("Loan Interest Rate");
+            
+            function update(jobStatus){
+                                
+                bubbles.attr("fill", function(d) {
+                        if (d['EmploymentStatus'] === jobStatus['key']) {
+                            return "blue";
+                        }
+                        else {
+                            return "orange"
+                        } 
+                    }
+                );               
+              
+            }
+            
+        };
+      
+            
+      
+    </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 to load the Prosper Loan Data file
+    */
+    
+d3.csv("sampledProsperLoanData.csv", function(d) {
+    d['creditScore'] = +d['CreditScoreRangeLower'];
+    d['interestRate'] = +d['BorrowerRate'];
+    d['empStatus'] = d['EmploymentStatus'];
+    return d;
+    }, draw);
+  </script>
+</body>
+</html>
