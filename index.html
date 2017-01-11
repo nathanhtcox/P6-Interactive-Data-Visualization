@@ -35,6 +35,13 @@
             background-color: rgb(251, 201, 127);
             padding: 3px;
             margin: 7px;
+            border-radius: 12px;
+            text-align: center;
+            transition-duration: 0.05s;
+          }
+        
+        .emp_buttons div:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.24), 0 6px 20px 0 rgba(0,0,0,0.19);
           }
       
           .button_title {
@@ -77,7 +84,7 @@
 
             var y = d3.scale.linear()
                 .range([height, margin])
-                .domain([0,0.4])
+                .domain([0,40])
                 
             var xAxis = d3.svg.axis().scale(x);
             
@@ -199,7 +206,7 @@
                 .attr("x", -((height-margin)/2))
                 .attr("dy", ".75em")
                 .attr("transform", "rotate(-90)")
-                .text("Loan Interest Rate");
+                .text("Loan Interest Rate (%)");
             
             function update(jobStatus){
                 
@@ -231,7 +238,7 @@
     
 d3.csv("sampledProsperLoanData.csv", function(d) {
     d['creditScore'] = +d['CreditScoreRangeLower'];
-    d['interestRate'] = +d['BorrowerRate'];
+    d['interestRate'] = +d['BorrowerRate']*100;
     d['empStatus'] = d['EmploymentStatus'];
     return d;
     }, draw);

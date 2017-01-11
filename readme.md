@@ -1,17 +1,18 @@
 #Project 6 - Data Visualization with D3
 
 ##Summary
-
+The data set is taken from prosper.com which is a peer to peer lending company. The visualization is a scatter plot with each data point representing a loan. The visualization shows 3 variables related to each loan - 1) interest rate 2) borrower credit score 3) borrower employment status. Credit score and interest rate are shown using position on the x and y axis respectively and the audience can filter the employment status by clicking the buttons on the left side of the visualization to change the colouring of the data points. 
 
 ##Design
-A scatter plot was chosen to give a rich sense of the number and distribution of data points while also communicating a trend in the data. Opacity and jitter were used to show the distribution of data points more clearly. Only 2 colours were used to keep the graphic simple, but buttons were added so the user can interact with the data and filter by employment status.
+A scatter plot was chosen to give a rich sense of the number and distribution of data points while also communicating a trend in the data. Opacity and jitter were used to show the distribution of data points more clearly. Jitter was adjusted to be wide enough to be able to clearly see the density of data points, but not too wide to make the credit score variable look continuous which would be misleading. Only 2 colours were used to keep the graphic simple, but buttons were added so the user can interact with the data and filter by employment status. The x axis (credit score) starts at 400. It is typically bad practice to start a scale at a number other than 0, however credit score is an interval measure so the 0 point doesn't have a strong meaning. This makes it acceptable to start the scale at 400 without distorting the data and this was done to keep the bulk of the data points centered in the visualization. Orange was chosen as the main data point colour because it is light enough that it is possible to overlay another colour (like blue) over it. Blue was chosen as the overlay colour.
 
 ####Additions Made After Feedback 1
+User 1 indicated that they were curious if "full-time" and "part-time" were a subset of the "employed" data set. Comments were added to the Employment Status portion of the visualization to clarify that each data point is associated with 1 and only 1 employment status. 
+User 1 also indicated they wanted a simple way to clear the blue overlay colour without reloading the page. A clear button was added that provides this functionality.
 
-####Additions Made After Feedback 2
-
-####Additions Made After Feedback 2
-
+####Additions Made After Feedback 2 and 3
+Users 2 and 3 both didn't notice the "buttons" on the left side of the visualization at first. To make the buttons appear interactive, the text was center aligned, the edges of the buttons were rounded and a shadow effect was added when the mouse hovers over a button.
+User 2 commented that the y axis wasn't clear (showing percentages as values between 0 and 1). To clarify the x axis, the percentages were changed to values between 0 and 100 and a % symbol was added in brackets after the y axis title.
 
 ##Feedback
 ####Feedback 1
@@ -50,3 +51,14 @@ There are few people in part time or retired employment status.
 
 
 ##Resources
+
+http://www.w3schools.com/css/css3_buttons.asp
+- used to make the button stylings more obvious
+- used w3schools.com for several references on css styling
+
+http://stackoverflow.com/questions/19713333/d3js-selection-and-class
+- used several stackoverflow threads like this to sort out details of how to do specefic things in d3 
+
+
+
+
