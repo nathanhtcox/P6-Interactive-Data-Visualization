@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <meta charset='utf-8'>
+  <script src='http://d3js.org/d3.v3.min.js'></script>
     <style>
         circle {
             opacity: 0.2;
@@ -38,46 +38,47 @@
             border-radius: 12px;
             text-align: center;
             transition-duration: 0.05s;
-          }
+        }
         
         .emp_buttons div:hover {
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.24), 0 6px 20px 0 rgba(0,0,0,0.19);
-          }
+        }
       
-          .button_title {
+        .button_title {
             background-color: white;
             text-align: center;
             font-weight: bold;
-          }
+        }
           
-          .label {
+        .label {
             font-size: 15px;
             padding: 3px;
-          }
+        }
           
-          nav {
+        nav {
             float: left;
             max-width: 160px;
             margin: 0;
             padding: 1em;
-          }
+        }
 
-          article {
+        article {
             margin-left: 170px;
             border-left: 1px solid gray;
             padding: 1em;
             overflow: hidden;
-          }
+        }
       
     </style>
-    <script type="text/javascript">  
+    <script type='text/javascript'>  
         function draw(loan_data) {
-            "use strict";
+            'use strict';
             var margin = 75,
                 width = 1400 - margin,
                 height = 600 - margin,
                 jitter = 30;
-
+            
+            //creating x and y scales and axis
             var x = d3.scale.linear()
                 .range([margin, width])
                 .domain([400,900])
@@ -88,18 +89,21 @@
                 
             var xAxis = d3.svg.axis().scale(x);
             
-            var yAxis = d3.svg.axis().scale(y).orient("left");
+            var yAxis = d3.svg.axis().scale(y).orient('left');
             
+            //sorting data by employment status for visualization
             var loansByEmployment = d3.nest()
                 .key(function(d) {return d.empStatus})
                 .entries(loan_data);
             
+            //removing data points where the employment status is blank
             loansByEmployment.splice(7,1);
                             
-            d3.select("body")
-              .append("h2")
-              .text("Prosper Loan Data Visualization");
+            d3.select('body')
+              .append('h2')
+              .text('Prosper Loan Data Visualization');
 
+            //a nav bar element is created to hold the buttons on the left side of the screen
             var nav = d3.select('body')
                 .append('nav')
                 .append('div')
@@ -111,7 +115,8 @@
                 
             var button_div = nav.append('div')
                     .attr('class', 'emp_buttons')
-                    
+            
+            //creating buttons        
             var buttons = button_div.selectAll('div')
                     .data(loansByEmployment)
                     .enter()
@@ -129,95 +134,94 @@
                 .text('*Each data point is associated with 1 and only 1 employment status.')
                 .attr('class', 'label');
 
-                    
-            buttons.on("click", function(d) {
-                d3.select(".emp_buttons")
-                    .selectAll("div")
+            //reset all buttons to orange background when a button is clicked, but the clicked button will be coloured blue
+            //then call the update function to update the scatter plot
+            buttons.on('click', function(d) {
+                d3.select('.emp_buttons')
+                    .selectAll('div')
                     .transition()
                     .duration(500)
-                    .style("color", "black")
-                    .style("background", "rgb(251, 201, 127)");
+                    .style('color', 'black')
+                    .style('background', 'rgb(251, 201, 127)');
                 
-                //debugger;
-
                 d3.select(this)
                     .transition()
                     .duration(500)
-                    .style("background", "blue")
-                    .style("color", "white");
+                    .style('background', 'blue')
+                    .style('color', 'white');
                 
                 update(d);
             });
             
+            //reset all buttons and data points to orange background/fill when clear button is clicked
             clearButton.on('click', function(d) {
-                d3.select(".emp_buttons")
-                    .selectAll("div")
+                d3.select('.emp_buttons')
+                    .selectAll('div')
                     .transition()
                     .duration(500)
-                    .style("color", "black")
-                    .style("background", "rgb(251, 201, 127)");
+                    .style('color', 'black')
+                    .style('background', 'rgb(251, 201, 127)');
                 
                 bubbles.attr('fill', 'orange');
             });
             
-            var svg = d3.select("body")
-                .append("svg")
-                .attr("width", width + margin)
-                .attr("height", height + margin)
-                .append("g")
-                .attr('class', "chart");
-       
+            //create the main svg
+            var svg = d3.select('body')
+                .append('svg')
+                .attr('width', width + margin)
+                .attr('height', height + margin)
+                .append('g')
+                .attr('class', 'chart');
+            
+            //add the data points to the scatterplot
             var bubbles = svg.append('g')
-                .attr("class", "bubble")
-                .selectAll("circle")
+                .attr('class', 'bubble')
+                .selectAll('circle')
                 .data(loan_data)
                 .enter()
-                .append("circle") 
+                .append('circle') 
                 .attr('cx', function(d) { return x(d['creditScore']) + Math.random()*jitter - jitter/2; })
                 .attr('cy', function(d) { return y(d['interestRate']); })
-                .attr('fill', 'orange');
-                
-            //bubbles.append("svg:text")
-            //    .text(function (d) { return d['creditScore']})
-            //    .attr('x', function(d) { return x(d['creditScore'])})
-            //    .attr('y', function(d) { return y(d['interestRate']) });
+                .attr('fill', 'orange');    
             
-            svg.append("g")
-                .attr("class", "axis")
-                .attr("transform", "translate(0," + (height) + ")")
+            //add axis labels and titles
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', 'translate(0,' + (height) + ')')
                 .call(xAxis);
                 
-            svg.append("g")
-                .attr("class", "axis")
-                .attr("transform", "translate(" + margin + ",0)")
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', 'translate(' + margin + ',0)')
                 .call(yAxis);
             
-            svg.append("text")
-                .attr("class", "x label")
-                .attr("text-anchor", "start")
-                .attr("x", width/2)
-                .attr("y", height + 40)
-                .text("Credit Score");
+            svg.append('text')
+                .attr('class', 'x label')
+                .attr('text-anchor', 'start')
+                .attr('x', width/2)
+                .attr('y', height + 40)
+                .text('Credit Score');
                 
-            svg.append("text")
-                .attr("class", "y label")
-                .attr("text-anchor", "end")
-                .attr("y", 6)
-                .attr("x", -((height-margin)/2))
-                .attr("dy", ".75em")
-                .attr("transform", "rotate(-90)")
-                .text("Loan Interest Rate (%)");
+            svg.append('text')
+                .attr('class', 'y label')
+                .attr('text-anchor', 'end')
+                .attr('y', 6)
+                .attr('x', -((height-margin)/2))
+                .attr('dy', '.75em')
+                .attr('transform', 'rotate(-90)')
+                .text('Loan Interest Rate (%)');
             
+            //update function changes the fill colour of the data points based on which 'jobStatus' is passed in (which button is clicked)
             function update(jobStatus){
                 
                 debugger;
                                 
-                bubbles.attr("fill", function(d) {
+                bubbles.attr('fill', function(d) {
                         if (d['EmploymentStatus'] === jobStatus['key']) {
-                            return "blue";
+                            return 'blue';
                         }
                         else {
-                            return "orange"
+                            return 'orange'
                         } 
                     }
                 );               
@@ -231,12 +235,12 @@
     </script>
   </head>
 <body>
-  <script type="text/javascript">
+  <script type='text/javascript'>
   /*
     Use D3 to load the Prosper Loan Data file
     */
     
-d3.csv("sampledProsperLoanData.csv", function(d) {
+d3.csv('sampledProsperLoanData.csv', function(d) {
     d['creditScore'] = +d['CreditScoreRangeLower'];
     d['interestRate'] = +d['BorrowerRate']*100;
     d['empStatus'] = d['EmploymentStatus'];
