@@ -5,9 +5,6 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
         circle {
-            <!-- fill: orange; --!>
-            <!-- stroke: black; --!>
-            stroke-width: 0.7;
             opacity: 0.2;
             r: 2;
         }
@@ -29,30 +26,41 @@
             font-size: 11px;
         }
         
-        div.emp_buttons {
-        margin-top: 100px;
-        left: 50px;
-      }
+        div.buttons_div {
+            margin-top: 50px;
+            left: 50px;
+          }
 
-      div.emp_buttons div {
-        background-color: rgb(251, 201, 127);
-        padding: 3px;
-        margin: 7px;
-      }
+        .emp_buttons div {
+            background-color: rgb(251, 201, 127);
+            padding: 3px;
+            margin: 7px;
+          }
       
-      nav {
-        float: left;
-        max-width: 160px;
-        margin: 0;
-        padding: 1em;
-      }
+          .button_title {
+            background-color: white;
+            text-align: center;
+            font-weight: bold;
+          }
+          
+          .label {
+            font-size: 15px;
+            padding: 3px;
+          }
+          
+          nav {
+            float: left;
+            max-width: 160px;
+            margin: 0;
+            padding: 1em;
+          }
 
-      article {
-        margin-left: 170px;
-        border-left: 1px solid gray;
-        padding: 1em;
-        overflow: hidden;
-      }
+          article {
+            margin-left: 170px;
+            border-left: 1px solid gray;
+            padding: 1em;
+            overflow: hidden;
+          }
       
     </style>
     <script type="text/javascript">  
@@ -85,35 +93,65 @@
               .append("h2")
               .text("Prosper Loan Data Visualization");
 
-            var nav = d3.select("body")
-                .append("nav")
+            var nav = d3.select('body')
+                .append('nav')
+                .append('div')
+                .attr('class', 'buttons_div');
+                    
+            nav.append('div')
+                .text('Employment Status*')
+                .attr('class', 'button_title');
                 
-            var buttons = nav.append('div')
+            var button_div = nav.append('div')
                     .attr('class', 'emp_buttons')
-                    .selectAll('div')
+                    
+            var buttons = button_div.selectAll('div')
                     .data(loansByEmployment)
                     .enter()
                     .append('div')
-                    .text(function(d) {return d.key})
+                    .text(function(d) {return d.key});
             
+            var clearButton = button_div.append('div')
+                .text('Clear')
+                .style('margin-bottom', '15px');
+            
+            nav.append('div')
+                .text('*Employment status is self reported by the borrower.')
+                .attr('class', 'label')
+                .append('div')
+                .text('*Each data point is associated with 1 and only 1 employment status.')
+                .attr('class', 'label');
+
+                    
             buttons.on("click", function(d) {
                 d3.select(".emp_buttons")
-                      .selectAll("div")
-                      .transition()
-                      .duration(500)
-                      .style("color", "black")
-                      .style("background", "rgb(251, 201, 127)");
+                    .selectAll("div")
+                    .transition()
+                    .duration(500)
+                    .style("color", "black")
+                    .style("background", "rgb(251, 201, 127)");
+                
+                //debugger;
 
-                    d3.select(this)
-                      .transition()
-                      .duration(500)
-                      .style("background", "blue")
-                      .style("color", "white");
+                d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .style("background", "blue")
+                    .style("color", "white");
                 
                 update(d);
             });
             
-            
+            clearButton.on('click', function(d) {
+                d3.select(".emp_buttons")
+                    .selectAll("div")
+                    .transition()
+                    .duration(500)
+                    .style("color", "black")
+                    .style("background", "rgb(251, 201, 127)");
+                
+                bubbles.attr('fill', 'orange');
+            });
             
             var svg = d3.select("body")
                 .append("svg")
@@ -164,6 +202,8 @@
                 .text("Loan Interest Rate");
             
             function update(jobStatus){
+                
+                debugger;
                                 
                 bubbles.attr("fill", function(d) {
                         if (d['EmploymentStatus'] === jobStatus['key']) {
