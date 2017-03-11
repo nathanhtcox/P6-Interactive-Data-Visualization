@@ -4,9 +4,13 @@
   <meta charset='utf-8'>
   <script src='http://d3js.org/d3.v3.min.js'></script>
     <style>
-        circle {
+        .bubble circle {
             opacity: 0.2;
             r: 2;
+        }
+        
+        .avgBubble circle {
+            r: 15;
         }
 
         h2 {
@@ -38,6 +42,7 @@
             border-radius: 12px;
             text-align: center;
             transition-duration: 0.05s;
+            cursor: pointer;
         }
         
         .emp_buttons div:hover {
@@ -70,6 +75,7 @@
         }
       
     </style>
+    
     <script type='text/javascript'>  
         function draw(loan_data) {
             'use strict';
@@ -81,24 +87,30 @@
             //creating x and y scales and axis
             var x = d3.scale.linear()
                 .range([margin, width])
-                .domain([400,900])
+                .domain([400,900]);
 
             var y = d3.scale.linear()
                 .range([height, margin])
-                .domain([0,40])
+                .domain([0,40]);
                 
             var xAxis = d3.svg.axis().scale(x);
             
             var yAxis = d3.svg.axis().scale(y).orient('left');
             
-            //sorting data by employment status for visualization
-            var loansByEmployment = d3.nest()
+            //calculating mean credit score and interest rate by employment status
+            var creditScoreByEmployment = d3.nest()
                 .key(function(d) {return d.empStatus})
+                .rollup(function(v) { return {
+                    numberBorrowers: v.length,
+                    creditScore: d3.mean(v, function(d) { return d.creditScore; }),
+                    interestRate: d3.mean(v, function(d) { return d.interestRate; }) 
+                }; })
                 .entries(loan_data);
             
-            //removing data points where the employment status is blank
-            loansByEmployment.splice(7,1);
-                            
+            creditScoreByEmployment.splice(7,1)
+            
+            creditScoreByEmployment.sort(function(a,b) { return d3.descending(a.values['interestRate'], b.values['interestRate'])})
+              
             d3.select('body')
               .append('h2')
               .text('Prosper Loan Data Visualization');
@@ -110,61 +122,41 @@
                 .attr('class', 'buttons_div');
                     
             nav.append('div')
-                .text('Employment Status*')
+                .text('Employment Status')
                 .attr('class', 'button_title');
                 
             var button_div = nav.append('div')
-                    .attr('class', 'emp_buttons')
+                    .attr('class', 'emp_buttons');
             
             //creating buttons        
             var buttons = button_div.selectAll('div')
-                    .data(loansByEmployment)
+                    .data(creditScoreByEmployment)
                     .enter()
                     .append('div')
                     .text(function(d) {return d.key});
             
-            var clearButton = button_div.append('div')
-                .text('Clear')
-                .style('margin-bottom', '15px');
+            //tracking which button is clicked
+            var clicked_button = null;
             
             nav.append('div')
-                .text('*Employment status is self reported by the borrower.')
-                .attr('class', 'label')
-                .append('div')
-                .text('*Each data point is associated with 1 and only 1 employment status.')
-                .attr('class', 'label');
-
+                .attr('class', 'avgBubble')
+                .append('circle')
+                
             //reset all buttons to orange background when a button is clicked, but the clicked button will be coloured blue
             //then call the update function to update the scatter plot
             buttons.on('click', function(d) {
-                d3.select('.emp_buttons')
-                    .selectAll('div')
-                    .transition()
-                    .duration(500)
-                    .style('color', 'black')
-                    .style('background', 'rgb(251, 201, 127)');
                 
-                d3.select(this)
-                    .transition()
-                    .duration(500)
-                    .style('background', 'blue')
-                    .style('color', 'white');
-                
-                update(d);
+                if (clicked_button != this.textContent) {
+                    clicked_button = this.textContent;
+                    update(d);
+               }
+               else {
+                   clear();                   
+                   clicked_button = null;
+               }
             });
             
-            //reset all buttons and data points to orange background/fill when clear button is clicked
-            clearButton.on('click', function(d) {
-                d3.select('.emp_buttons')
-                    .selectAll('div')
-                    .transition()
-                    .duration(500)
-                    .style('color', 'black')
-                    .style('background', 'rgb(251, 201, 127)');
-                
-                bubbles.attr('fill', 'orange');
-            });
-            
+                        
             //create the main svg
             var svg = d3.select('body')
                 .append('svg')
@@ -173,6 +165,50 @@
                 .append('g')
                 .attr('class', 'chart');
             
+            //adding a legend to the svg to explain what the dots represent
+            var legend_text = [{text:'single loan', x:150, y:20}, 
+                {text:'multpile loans', x:150, y:45}, 
+                {text:'employment status average', x:150, y:70} ];
+            
+            var legend_dots = [{cx:140, cy:14, r:3, opacity:0.2, fill:'orange'},
+                {cx:140, cy:39, r:3, opacity:0.8, fill:'orange'},
+                {cx:130, cy:64, r:15, opacity:0.2, fill:'orange'}];
+            
+            var legend1 = svg.append('g')
+                .attr('class', 'legendtext')
+                .selectAll('text')
+                .data(legend_text)
+                .enter()
+                .append('text')
+                .attr('x', function (d) {return d.x})
+                .attr('y', function (d) {return d.y})
+                .text(function (d) {return d.text});
+           
+            var legend2 = svg.append('g')
+                .attr('class', 'legenddots')
+                .selectAll('circle')
+                .data(legend_dots)
+                .enter()
+                .append('circle')
+                .attr('cx', function(d) { return d.cx })
+                .attr('cy', function(d) { return d.cy })
+                .attr('r', function(d) { return d.r })
+                .attr('opacity', function(d) { return d.opacity })
+                .attr('fill', 'orange');
+                
+                
+            var avgBubbles = svg.append('g')
+                .attr('class', 'avgBubble')
+                .selectAll('circle')
+                .data(creditScoreByEmployment)
+                .enter()
+                .append('circle')
+                .attr('cx', function(d) { return x(d.values.creditScore);  })
+                .attr('cy', function(d) { return y(d.values.interestRate); })
+                .attr('opacity', 0.3)
+                .attr('fill', 'orange');
+                
+                                   
             //add the data points to the scatterplot
             var bubbles = svg.append('g')
                 .attr('class', 'bubble')
@@ -183,6 +219,7 @@
                 .attr('cx', function(d) { return x(d['creditScore']) + Math.random()*jitter - jitter/2; })
                 .attr('cy', function(d) { return y(d['interestRate']); })
                 .attr('fill', 'orange');    
+            
             
             //add axis labels and titles
             svg.append('g')
@@ -213,21 +250,76 @@
             
             //update function changes the fill colour of the data points based on which 'jobStatus' is passed in (which button is clicked)
             function update(jobStatus){
-                
-                debugger;
-                                
+                      
                 bubbles.attr('fill', function(d) {
-                        if (d['EmploymentStatus'] === jobStatus['key']) {
-                            return 'blue';
-                        }
-                        else {
-                            return 'orange'
-                        } 
+                    if (d['EmploymentStatus'] === jobStatus['key']) {
+                        return 'blue';
+                    };
+                    return 'orange';     
+                });
+                
+                avgBubbles.attr('opacity', function(d) {
+                    if (d['key'] === jobStatus['key']) {
+                        return 0.6;
+                    };
+                    return 0.3;      
+                });                   
+                
+                avgBubbles.attr('fill', function(d) {
+                    if (d['key'] === jobStatus['key']) {
+                        return 'blue';
+                    };
+                    return 'orange';      
+                });
+                
+                buttons.style('color', function(d) {
+                    if (d['key'] == jobStatus['key']) {
+                        return 'white';
                     }
-                );               
-              
+                    return 'black';
+                });
+                
+                buttons.style('background', function(d) {
+                    if (d['key'] == jobStatus['key']) {
+                        return 'blue';
+                    }
+                    return 'rgb(251, 201, 127)';
+                });
+                             
+            };
+            
+            function clear() {
+                
+               d3.select('.emp_buttons')
+                   .selectAll('div')
+                   .transition()
+                   .duration(500)
+                   .style('color', 'black')
+                   .style('background', 'rgb(251, 201, 127)');
+                
+               bubbles.attr('fill', 'orange');
+               avgBubbles.attr('opacity', 0.3);
+               avgBubbles.attr('fill', 'orange');
+             
             }
             
+            
+            var empStatusCount = -1
+            
+            var animate = setInterval(function() {
+                
+                empStatusCount++;
+                
+                if(empStatusCount >= creditScoreByEmployment.length) {
+                    clear();
+                    clearInterval(animate);   
+                }
+                else {
+                    update(creditScoreByEmployment[empStatusCount]);    
+                }
+                                        
+                },2000);
+                            
         };
       
             
