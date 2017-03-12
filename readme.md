@@ -4,7 +4,7 @@
 The data set is taken from prosper.com which is a peer to peer lending company. The visualization is a scatter plot with each data point representing a loan. The visualization shows 3 variables related to each loan - 1) interest rate 2) borrower credit score 3) borrower employment status. Credit score and interest rate are shown using position on the x and y axis respectively and the audience can filter the employment status by clicking the buttons on the left side of the visualization to change the colouring of the data points. Larger semi-transparent dots are shown on the plot to indicate the mean interest rate and credit score by employment status. 
 
 ##Findings
-Borrowers who have full-time employment have the lowest mean interest rate even though the mean credit score for this employment class is in the middle of the pack compared to other employment classes. Borrowers who are not employed tend to have a much higher interest rate on their loan. Unemployed borrowers appear to have much higher credit scores which seems to indicate that borrowers in this group with lower credit scores are not offered loans. Borrowers whose employment status is not reported seem to have very low credit scores but they still seem to receive low interest rates compared to the other employment classes.
+Borrowers who have full-time employment have the lowest mean interest rate on their loans, even though the mean credit score for this employment class is in the middle of the pack compared to other employment classes. Borrowers who are not employed tend to have much higher interest rates on their loans. Unemployed borrowers appear to have much higher credit scores which may indicate that potential borrowers in this group with lower credit scores are not offered loans. Borrowers whose employment status is not reported appear to have very low credit scores yet still appear to receive low interest rates compared to the other employment classes.
 
 ##Design
 A scatter plot was chosen to give a rich sense of the number and distribution of data points while also communicating a trend in the data. Opacity and jitter were used to show the distribution of data points more clearly. Jitter was adjusted to be wide enough to be able to clearly see the density of data points, but not too wide to make the credit score variable look continuous which would be misleading. Only 2 colours were used to keep the graphic simple, but buttons were added so the user can interact with the data and filter by employment status. The x axis (credit score) starts at 400. It is typically bad practice to start a scale at a number other than 0, however credit score is an interval measure so the 0 point doesn't have a strong meaning. This makes it acceptable to start the scale at 400 without distorting the data and this was done to keep the bulk of the data points centered in the visualization. Orange was chosen as the main data point colour because it is light enough that it is possible to overlay another colour (like blue) over it. Blue was chosen as the overlay colour.
@@ -63,7 +63,10 @@ http://www.w3schools.com/css/css3_buttons.asp
 - used w3schools.com for several references on css styling
 
 http://stackoverflow.com/questions/19713333/d3js-selection-and-class
-- used several stackoverflow threads like this to sort out details of how to do specefic things in d3 
+- used several stackoverflow threads like this to sort out details of how to do specefic things in d3
+
+https://ablesense.com/responsive-d3js-charts/
+- used to sort out how to make svg and navbar responsive 
 
 
 

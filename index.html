@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
   <meta charset='utf-8'>
   <script src='http://d3js.org/d3.v3.min.js'></script>
@@ -37,6 +38,8 @@
 
         .emp_buttons div {
             background-color: rgb(251, 201, 127);
+            display: inline-block;
+            width: 150px;
             padding: 3px;
             margin: 7px;
             border-radius: 12px;
@@ -61,8 +64,8 @@
         }
           
         nav {
-            float: left;
-            max-width: 160px;
+            display: inline-block;
+            vertical-align: top;
             margin: 0;
             padding: 1em;
         }
@@ -80,8 +83,10 @@
         function draw(loan_data) {
             'use strict';
             var margin = 75,
-                width = 1400 - margin,
+                //width = 1400 - margin,
+                width = parseInt(d3.select('body').style('width'), 10) - margin - margin,
                 height = 600 - margin,
+                
                 jitter = 30;
             
             //creating x and y scales and axis
@@ -137,10 +142,6 @@
             
             //tracking which button is clicked
             var clicked_button = null;
-            
-            nav.append('div')
-                .attr('class', 'avgBubble')
-                .append('circle')
                 
             //reset all buttons to orange background when a button is clicked, but the clicked button will be coloured blue
             //then call the update function to update the scatter plot
@@ -167,7 +168,7 @@
             
             //adding a legend to the svg to explain what the dots represent
             var legend_text = [{text:'single loan', x:150, y:20}, 
-                {text:'multpile loans', x:150, y:45}, 
+                {text:'multiple loans', x:150, y:45}, 
                 {text:'employment status average', x:150, y:70} ];
             
             var legend_dots = [{cx:140, cy:14, r:3, opacity:0.2, fill:'orange'},
@@ -247,6 +248,24 @@
                 .attr('dy', '.75em')
                 .attr('transform', 'rotate(-90)')
                 .text('Loan Interest Rate (%)');
+            
+            
+            //add textbox and a button to show the findings
+            var findings = ["Borrowers who have full-time employment have the lowest mean interest rate on their loans, even though the mean credit score for this employment class is in the middle of the pack compared to other employment classes.", "Borrowers who are not employed tend to have much higher interest rates on their loans.", "Unemployed borrowers appear to have much higher credit scores which may indicate that potential borrowers in this group with lower credit scores are not offered loans.", "Borrowers whose employment status is not reported appear to have very low credit scores yet still appear to receive low interest rates compared to the other employment classes."]
+            
+            d3.select('body')
+                .append('div')
+                .text('Findings')
+                .attr('class', 'button_title');
+                
+            d3.select('body')
+                .append('ul')
+                .selectAll('li')
+                .data(findings)
+                .enter()
+                .append('li')
+                .text(function (d) {return d});
+            
             
             //update function changes the fill colour of the data points based on which 'jobStatus' is passed in (which button is clicked)
             function update(jobStatus){
