@@ -1,0 +1,73 @@
+.bubble circle {
+    opacity: 0.2;
+    r: 2;
+}
+
+.avgBubble circle {
+    r: 15;
+}
+
+h2 {
+    text-align: center;
+    color: black;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+div.buttons_div {
+    margin-top: 50px;
+    left: 50px;
+  }
+
+.emp_buttons div {
+    background-color: rgb(251, 201, 127);
+    display: inline-block;
+    width: 150px;
+    padding: 3px;
+    margin: 7px;
+    border-radius: 12px;
+    text-align: center;
+    transition-duration: 0.05s;
+    cursor: pointer;
+}
+
+.emp_buttons div:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.24), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.button_title {
+    background-color: white;
+    text-align: center;
+    font-weight: bold;
+}
+  
+.label {
+    font-size: 15px;
+    padding: 3px;
+}
+  
+nav {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+    padding: 0;
+}
+
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+

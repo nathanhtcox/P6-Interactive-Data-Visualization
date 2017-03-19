@@ -2,92 +2,18 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
-  <meta charset='utf-8'>
-  <script src='http://d3js.org/d3.v3.min.js'></script>
-    <style>
-        .bubble circle {
-            opacity: 0.2;
-            r: 2;
-        }
-        
-        .avgBubble circle {
-            r: 15;
-        }
-
-        h2 {
-            text-align: center;
-            color: black;
-        }
-      
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: black;
-            shape-rendering: crispEdges;
-        }
-
-        .axis text {
-            font-family: sans-serif;
-            font-size: 11px;
-        }
-        
-        div.buttons_div {
-            margin-top: 50px;
-            left: 50px;
-          }
-
-        .emp_buttons div {
-            background-color: rgb(251, 201, 127);
-            display: inline-block;
-            width: 150px;
-            padding: 3px;
-            margin: 7px;
-            border-radius: 12px;
-            text-align: center;
-            transition-duration: 0.05s;
-            cursor: pointer;
-        }
-        
-        .emp_buttons div:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.24), 0 6px 20px 0 rgba(0,0,0,0.19);
-        }
-      
-        .button_title {
-            background-color: white;
-            text-align: center;
-            font-weight: bold;
-        }
-          
-        .label {
-            font-size: 15px;
-            padding: 3px;
-        }
-          
-        nav {
-            display: inline-block;
-            vertical-align: top;
-            margin: 0;
-            padding: 1em;
-        }
-
-        article {
-            margin-left: 170px;
-            border-left: 1px solid gray;
-            padding: 1em;
-            overflow: hidden;
-        }
-      
-    </style>
-    
+    <meta charset='utf-8'>
+    <script src='http://d3js.org/d3.v3.min.js'></script>
+    <link rel="stylesheet" type="text/css" href="loandata.css">
+  
     <script type='text/javascript'>  
         function draw(loan_data) {
             'use strict';
+            
             var margin = 75,
-                //width = 1400 - margin,
-                width = parseInt(d3.select('body').style('width'), 10) - margin - margin,
-                height = 600 - margin,
-                
-                jitter = 30;
+            width = parseInt(d3.select('body').style('width'), 10) - margin - margin,
+            height = 600 - margin,    
+            jitter = 30;
             
             //creating x and y scales and axis
             var x = d3.scale.linear()
@@ -118,18 +44,14 @@
               
             d3.select('body')
               .append('h2')
-              .text('Prosper Loan Data Visualization');
+              .text('Prosper Loans - Interest and Credit Rating by Employment Status');
 
             //a nav bar element is created to hold the buttons on the left side of the screen
             var nav = d3.select('body')
                 .append('nav')
                 .append('div')
                 .attr('class', 'buttons_div');
-                    
-            nav.append('div')
-                .text('Employment Status')
-                .attr('class', 'button_title');
-                
+                        
             var button_div = nav.append('div')
                     .attr('class', 'emp_buttons');
             
@@ -173,7 +95,7 @@
             
             var legend_dots = [{cx:140, cy:14, r:3, opacity:0.2, fill:'orange'},
                 {cx:140, cy:39, r:3, opacity:0.8, fill:'orange'},
-                {cx:130, cy:64, r:15, opacity:0.2, fill:'orange'}];
+                {cx:130, cy:64, r:15, opacity:0.2, fill:'black'}];
             
             var legend1 = svg.append('g')
                 .attr('class', 'legendtext')
@@ -195,7 +117,7 @@
                 .attr('cy', function(d) { return d.cy })
                 .attr('r', function(d) { return d.r })
                 .attr('opacity', function(d) { return d.opacity })
-                .attr('fill', 'orange');
+                .attr('fill', function(d) { return d.fill });
                 
                 
             var avgBubbles = svg.append('g')
@@ -206,8 +128,8 @@
                 .append('circle')
                 .attr('cx', function(d) { return x(d.values.creditScore);  })
                 .attr('cy', function(d) { return y(d.values.interestRate); })
-                .attr('opacity', 0.3)
-                .attr('fill', 'orange');
+                .attr('fill', 'black')
+                .attr('opacity', 0.3);
                 
                                    
             //add the data points to the scatterplot
@@ -236,7 +158,7 @@
             svg.append('text')
                 .attr('class', 'x label')
                 .attr('text-anchor', 'start')
-                .attr('x', width/2)
+                .attr('x', width/2 + margin/2)
                 .attr('y', height + 40)
                 .text('Credit Score');
                 
@@ -288,7 +210,7 @@
                     if (d['key'] === jobStatus['key']) {
                         return 'blue';
                     };
-                    return 'orange';      
+                    return 'black';      
                 });
                 
                 buttons.style('color', function(d) {
@@ -318,7 +240,7 @@
                 
                bubbles.attr('fill', 'orange');
                avgBubbles.attr('opacity', 0.3);
-               avgBubbles.attr('fill', 'orange');
+               avgBubbles.attr('fill', 'black');
              
             }
             
@@ -340,8 +262,6 @@
                 },2000);
                             
         };
-      
-            
       
     </script>
   </head>
